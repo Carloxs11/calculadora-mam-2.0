@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de rentabilidad · Meta Ads Mastery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --gold:#FEDC21;
+  --navy:#14213D;--blue:#3572D9;--blue-deep:#174C95;--sky:#2394CD;
+  --red:#D6341A;--orange:#FC9C08;--silver:#E0DFDE;
+  --page:#FFF6C4;--panel:#FFFEF7;--ink:#14213D;--muted:#5B6274;--line:#EDDF9A;--field:#FFFFFF;
+  --head:"Space Grotesk","Trebuchet MS",Arial,sans-serif;
+  --body:Inter,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--page:#0A0A0A;--panel:#151515;--ink:#F3F1EA;--muted:#A3A3A3;--line:#2A2A2A;--field:#0D0D0D}
+}
+:root[data-theme="dark"]{--page:#0A0A0A;--panel:#151515;--ink:#F3F1EA;--muted:#A3A3A3;--line:#2A2A2A;--field:#0D0D0D}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:var(--head);margin:0;line-height:1.15}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+
+header{background:var(--gold);color:var(--navy);padding:26px 0 30px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--head);font-weight:700;font-size:17px}
+.brand img{width:44px;height:44px;border-radius:12px;display:block}
+.brand small{display:block;font-family:var(--body);font-weight:500;font-size:12.5px;opacity:.8}
+header h1{font-size:clamp(30px,5.2vw,52px);letter-spacing:-.02em;margin-top:22px;max-width:16ch}
+header p{max-width:60ch;margin:12px 0 0;font-size:16px}
+.topbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:20px}
+.topbar label{font-weight:600;font-size:13.5px}
+select,.btn{font:inherit;font-weight:600;border-radius:10px;border:2px solid var(--navy);background:transparent;color:var(--navy);padding:8px 12px;cursor:pointer}
+.btn:hover{background:var(--navy);color:#fff}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+main{padding:26px 0 40px}
+.grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
+.panel h2{font-size:19px;margin-bottom:4px}
+.panel .sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+@media (max-width:480px){.fields{grid-template-columns:1fr}}
+.f label{display:block;font-weight:600;font-size:13.5px;margin-bottom:5px}
+.f .hint{color:var(--muted);font-size:12px;margin-top:4px;line-height:1.35}
+.inp{display:flex;align-items:center;background:var(--field);border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+.inp:focus-within{border-color:var(--blue)}
+.inp input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:600 16px var(--body);padding:10px 12px;outline:none}
+.inp span{padding:0 12px;color:var(--muted);font-weight:600;font-size:14px}
+.switch{display:flex;align-items:center;gap:10px;font-weight:600;margin:0 0 12px;cursor:pointer}
+.switch input{width:20px;height:20px;accent-color:var(--blue)}
+.off{display:none}
+
+.sticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + 14px)}
+@media (max-width:860px){.sticky{position:static}}
+.hero{background:var(--blue-deep);color:#fff;border-radius:18px;padding:22px;margin-bottom:18px}
+.hero h2{font-size:15px;font-weight:600;opacity:.9}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.big div{background:rgba(255,255,255,.1);border-radius:14px;padding:14px}
+.big b{display:block;font-family:var(--head);font-size:clamp(28px,5vw,40px);line-height:1.05;letter-spacing:-.02em;overflow-wrap:anywhere}
+.big span{font-size:13px;opacity:.9}
+.hero .row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid rgba(255,255,255,.18);font-size:14px}
+.hero .row:first-of-type{margin-top:14px}
+.hero .row b{font-family:var(--head);white-space:nowrap}
+.hero .note{font-size:12.5px;opacity:.85;margin:10px 0 0}
+.alert{background:var(--red);color:#fff;border-radius:12px;padding:12px 14px;font-weight:600;font-size:14px;margin-bottom:14px}
+
+.bar{display:flex;height:26px;border-radius:8px;overflow:hidden;background:var(--line);margin:6px 0 14px}
+.bar i{display:block;height:100%}
+.leg{list-style:none;margin:0;padding:0}
+.leg li{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}
+.leg li:last-child{border:0;font-weight:700}
+.leg i{width:12px;height:12px;border-radius:3px;flex:none}
+.leg b{margin-left:auto;font-family:var(--head);white-space:nowrap}
+
+.sim{background:var(--panel);border:2px solid var(--blue);border-radius:18px;padding:22px}
+.sim h2{font-size:24px}
+.seg{display:inline-flex;border:2px solid var(--blue);border-radius:10px;overflow:hidden;margin:14px 0}
+.seg button{font:600 14px var(--body);border:0;background:transparent;color:var(--ink);padding:8px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+@media (max-width:860px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi span{display:block;color:var(--muted);font-size:12.5px}
+.kpi b{font-family:var(--head);font-size:20px;overflow-wrap:anywhere}
+.kpi.main{grid-column:span 2;background:var(--navy);border-color:var(--navy);color:#fff}
+.kpi.main span{color:#fff;opacity:.85}
+.kpi.main b{font-size:clamp(28px,5vw,40px)}
+.kpi.main.loss{background:var(--red);border-color:var(--red)}
+.verdict{font-weight:600;margin:0 0 18px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12.5px;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.n{font-family:var(--head);font-weight:600}
+tr.me td{background:rgba(53,114,217,.12);font-weight:700}
+.pb{height:10px;border-radius:5px;min-width:2px}
+.pos{color:var(--blue)}.neg{color:var(--red)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pos{color:#7FB0FF}:root:not([data-theme="light"]) .neg{color:#FF8A73}}
+:root[data-theme="dark"] .pos{color:#7FB0FF}:root[data-theme="dark"] .neg{color:#FF8A73}
+
+footer{background:var(--navy);color:#fff;padding:26px 0;margin-top:10px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+footer p{margin:0;max-width:52ch;font-size:14px}
+footer a{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;text-decoration:none;border-radius:10px;padding:11px 16px}
+footer a.alt{background:transparent;color:#fff;border:2px solid #fff}
+.small{color:var(--muted);font-size:12.5px;margin:14px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand"><img src="data:image/jpeg;base64,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" alt=""><div>Meta Ads Mastery 2.0<small>by @carlosgutii</small></div></div>
+    <h1>¿Cuánto puedes pagar por cada venta?</h1>
+    <p>Mete tus números reales y sabrás tu CPA máximo, tu ROAS mínimo y cuánto dinero te queda limpio con la inversión que quieras hacer.</p>
+    <div class="topbar">
+      <label for="cur">Moneda</label>
+      <select id="cur">
+        <option value="EUR">€ Euro</option><option value="USD">$ Dólar</option>
+        <option value="COP">$ Peso colombiano</option><option value="MXN">$ Peso mexicano</option>
+      </select>
+      <button class="btn" id="reset" type="button">Restablecer valores</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <div id="inputs"></div>
+    <div class="sticky">
+      <div id="alert"></div>
+      <section class="hero" aria-live="polite">
+        <h2>Tu punto de equilibrio en Meta Ads</h2>
+        <div class="big">
+          <div><b id="o-cpaMax">–</b><span>CPA máximo</span></div>
+          <div><b id="o-roasMin">–</b><span>ROAS mínimo</span></div>
+        </div>
+        <div class="row"><span>CPA objetivo (con tu margen deseado)</span><b id="o-cpaObj">–</b></div>
+        <div class="row"><span>ROAS objetivo</span><b id="o-roasObj">–</b></div>
+        <div class="row"><span>Margen antes de publicidad</span><b id="o-mPct">–</b></div>
+        <p class="note">El ROAS es el que ves en el Administrador de anuncios: valor de compra con impuestos entre gasto. Por encima del mínimo ganas, por debajo pierdes.</p>
+      </section>
+      <section class="panel">
+        <h2>Qué pasa con cada pedido</h2>
+        <p class="sub" id="o-barSub"></p>
+        <div class="bar" id="o-bar" role="img" aria-label="Reparto del dinero de un pedido"></div>
+        <ul class="leg" id="o-leg"></ul>
+        <p class="small" id="o-retNote"></p>
+      </section>
+    </div>
+  </div>
+
+  <section class="sim">
+    <h2>Simula tu beneficio</h2>
+    <p class="sub" style="color:var(--muted);margin:6px 0 0">Pon cuánto vas a invertir en anuncios y con qué resultado. Los costes fijos se restan aquí.</p>
+    <div class="seg" role="group" aria-label="Dato que conoces">
+      <button type="button" id="m-roas" aria-pressed="true">Conozco mi ROAS</button>
+      <button type="button" id="m-cpa" aria-pressed="false">Conozco mi CPA</button>
+    </div>
+    <div class="fields" id="simFields"></div>
+    <div class="kpis" id="o-kpis" aria-live="polite"></div>
+    <p class="verdict" id="o-verdict"></p>
+    <h3 style="font-size:17px;margin-bottom:8px">Misma inversión, distintos ROAS</h3>
+    <div class="scroll"><table>
+      <thead><tr><th>ROAS</th><th>CPA</th><th>Pedidos</th><th>Beneficio neto</th><th style="width:34%"></th></tr></thead>
+      <tbody id="o-table"></tbody>
+    </table></div>
+    <p class="small">Beneficio antes de impuestos sobre beneficios. Los cálculos se guardan solo en este navegador.</p>
+  </section>
+</main>
+
+<footer><div class="wrap"><p>Recurso exclusivo para miembros de Meta Ads Mastery.</p></div></footer>
+
+<script>
+/*CALC*/
+function calc(v){
+  var Pd=v.aov*(1-v.disc/100);
+  var iva=v.ivaOn?v.iva/100:0;
+  var R=Pd/(1+iva);
+  var c=v.cod?v.conf/100:1, e=v.cod?v.deliv/100:1, r=v.ret/100;
+  var del=c*e, kept=del*(1-r);
+  var o={Pd:Pd,c:c,del:del,kept:kept};
+  o.charged=Pd*kept;                       // dinero cobrado y no devuelto
+  o.rev=R*kept;                            // ingreso neto sin IVA
+  o.vat=o.charged-o.rev;
+  o.cProd=v.cogs*(kept+del*r*(1-v.retRecov/100));
+  o.cShip=(v.ship+v.pack)*c;
+  o.cFees=(v.feePct/100*Pd+v.feeFix)*del+v.otherPct/100*R*kept;
+  o.cRet=v.retCost*del*r+(v.cod?v.codRet*c*(1-e):0);
+  o.m=o.rev-o.cProd-o.cShip-o.cFees-o.cRet; // margen por pedido generado, antes de ads
+  o.ltv=1+v.repeat;
+  o.cpaMax=o.m*o.ltv;
+  o.roasMin=o.cpaMax>0?Pd/o.cpaMax:Infinity;
+  o.cpaObj=o.cpaMax-v.target/100*o.rev*o.ltv;
+  o.roasObj=o.cpaObj>0?Pd/o.cpaObj:Infinity;
+  o.mPct=o.rev>0?o.m/o.rev*100:0;
+  return o;
+}
+function simulate(v,o,inv,roas){
+  var s={roas:roas};
+  s.orders=o.Pd>0?inv*roas/o.Pd:0;
+  s.cpa=s.orders>0?inv/s.orders:Infinity;
+  s.reported=inv*roas;
+  s.net=s.orders*o.rev*o.ltv;
+  s.costs=s.orders*(o.cProd+o.cShip+o.cFees+o.cRet)*o.ltv;
+  s.profit=s.orders*o.cpaMax-inv-v.fixed;
+  s.margin=s.net>0?s.profit/s.net*100:0;
+  s.perUnit=inv>0?s.profit/inv:0;
+  s.kept=s.orders*o.kept*o.ltv;
+  s.roasFixed=(o.cpaMax>0&&inv>0)?(inv+v.fixed)/o.cpaMax*o.Pd/inv:Infinity;
+  return s;
+}
+/*END*/
+
+var GROUPS=[
+ {t:"Tu venta",s:"Lo que paga el cliente en un pedido medio.",f:[
+  ["aov","Precio medio del pedido","cur","49,90","Con impuestos incluidos, tal como lo cobra tu tienda."],
+  ["disc","Descuento medio","%","0","Cupones y promociones, de media."]],
+  sw:["ivaOn","Mis precios llevan IVA incluido",true],swf:[["iva","IVA","%","21","Se resta del ingreso: ese dinero no es tuyo."]]},
+ {t:"Costes por pedido",s:"Importes sin IVA si lo recuperas.",f:[
+  ["cogs","Coste del producto","cur","12","Todas las unidades de un pedido medio."],
+  ["ship","Envío que pagas tú","cur","4,50"],
+  ["pack","Embalaje y preparación","cur","0,80"],
+  ["feePct","Comisión de la pasarela","%","2,9","Stripe, PayPal, Shopify Payments o recaudo."],
+  ["feeFix","Comisión fija por cobro","cur","0,30"],
+  ["otherPct","Otras comisiones sobre la venta","%","0","Marketplace, apps, afiliados, comerciales."]]},
+ {t:"Devoluciones",s:"Pedidos entregados que acabas reembolsando.",f:[
+  ["ret","Pedidos devueltos","%","3"],
+  ["retCost","Coste de cada devolución","cur","4,50","Envío de vuelta y gestión."],
+  ["retRecov","Producto que recuperas","%","50","Parte del producto devuelto que puedes volver a vender."]]},
+ {t:"Contra reembolso",s:"Actívalo si cobras al entregar.",
+  sw:["cod","Vendo contra reembolso (COD)",false],swf:[
+  ["conf","Pedidos confirmados","%","85","De los que entran, cuántos llegas a despachar."],
+  ["deliv","Pedidos entregados","%","75","De los despachados, cuántos se cobran."],
+  ["codRet","Coste de un pedido rehusado","cur","4","Flete de vuelta cuando no se entrega."]]},
+ {t:"Tu negocio",s:"Para el objetivo y para el beneficio final.",f:[
+  ["fixed","Costes fijos al mes","cur","500","Herramientas, equipo, agencia, gestoría."],
+  ["target","Margen neto que quieres","%","15","Sobre ventas sin IVA, después de anuncios."],
+  ["repeat","Recompras por cliente","x","0","Pedidos extra que hace cada cliente sin pagar anuncio. 0,3 = 3 de cada 10 repiten."]]}
+];
+var SIM=[["inv","Inversión en anuncios","cur","3000","Al mes, o el periodo que quieras medir."],
+         ["roas","ROAS que consigues","x","2,5","Como aparece en el Administrador de anuncios."],
+         ["cpa","CPA que consigues","cur","20","Coste por compra en el Administrador de anuncios."]];
+var CUR={EUR:["€",2],USD:["$",2],COP:["$",0],MXN:["$",2]};
+var KEY="mam-calc-v1", state={}, defaults={cur:"EUR",mode:"roas"};
+
+function fieldHTML(d){
+  defaults[d[0]]=d[3];
+  return '<div class="f" data-f="'+d[0]+'"><label for="i-'+d[0]+'">'+d[1]+'</label><div class="inp"><input id="i-'+d[0]+'" data-k="'+d[0]+'" type="text" inputmode="decimal" autocomplete="off"><span data-u="'+d[2]+'">'+(d[2]==="x"?"×":d[2])+'</span></div>'+(d[4]?'<div class="hint">'+d[4]+'</div>':'')+'</div>';
+}
+function build(){
+  var h="";
+  GROUPS.forEach(function(g){
+    h+='<section class="panel"><h2>'+g.t+'</h2><p class="sub">'+g.s+'</p>';
+    if(g.f)h+='<div class="fields">'+g.f.map(fieldHTML).join("")+'</div>';
+    if(g.sw){defaults[g.sw[0]]=g.sw[2];
+      h+='<label class="switch" style="margin-top:'+(g.f?14:0)+'px"><input type="checkbox" data-c="'+g.sw[0]+'">'+g.sw[1]+'</label><div class="fields" data-sw="'+g.sw[0]+'">'+g.swf.map(fieldHTML).join("")+'</div>';}
+    h+='</section>';
+  });
+  document.getElementById("inputs").innerHTML=h;
+  document.getElementById("simFields").innerHTML=SIM.map(fieldHTML).join("");
+}
+function num(s){
+  s=String(s==null?"":s).replace(/[^\d.,-]/g,"");
+  var lc=s.lastIndexOf(","), ld=s.lastIndexOf(".");
+  if(lc>-1&&ld>-1){ if(lc>ld)s=s.replace(/\./g,"").replace(",","."); else s=s.replace(/,/g,""); }
+  else if(lc>-1)s=s.replace(/,/g,function(m,i){return i===lc?".":"";});
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,"");
+  var n=parseFloat(s);return isFinite(n)?n:0;
+}
+function clamp(n,a,b){return Math.min(b,Math.max(a,n));}
+function money(n,forceDec){
+  if(!isFinite(n))return "–";
+  var c=CUR[state.cur]||CUR.EUR, d=forceDec!=null?forceDec:c[1];
+  if(Math.abs(n)>=10000)d=0;
+  var t=new Intl.NumberFormat("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d}).format(Math.abs(n));
+  return (n<0?"−":"")+t+" "+c[0];
+}
+function dec(n,d){return isFinite(n)?new Intl.NumberFormat("de-DE",{minimumFractionDigits:d,maximumFractionDigits:d}).format(n):"–";}
+function $(id){return document.getElementById(id);}
+function load(){
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){}
+  state={};for(var k in defaults)state[k]=(k in saved)?saved[k]:defaults[k];
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+function paint(){
+  document.querySelectorAll("input[data-k]").forEach(function(i){i.value=state[i.dataset.k];});
+  document.querySelectorAll("input[data-c]").forEach(function(i){i.checked=!!state[i.dataset.c];});
+  $("cur").value=state.cur;
+}
+function values(){
+  var v={};
+  ["aov","cogs","ship","pack","feeFix","retCost","codRet","fixed","repeat"].forEach(function(k){v[k]=Math.max(0,num(state[k]));});
+  ["disc","iva","feePct","otherPct","ret","retRecov","conf","deliv","target"].forEach(function(k){v[k]=clamp(num(state[k]),0,100);});
+  v.ivaOn=!!state.ivaOn;v.cod=!!state.cod;
+  return v;
+}
+function render(){
+  var sym=(CUR[state.cur]||CUR.EUR)[0];
+  document.querySelectorAll('[data-u="cur"]').forEach(function(s){s.textContent=sym;});
+  document.querySelectorAll("[data-sw]").forEach(function(d){d.classList.toggle("off",!state[d.dataset.sw]);});
+  var byRoas=state.mode!=="cpa";
+  $("m-roas").setAttribute("aria-pressed",byRoas);$("m-cpa").setAttribute("aria-pressed",!byRoas);
+  document.querySelector('[data-f="roas"]').classList.toggle("off",!byRoas);
+  document.querySelector('[data-f="cpa"]').classList.toggle("off",byRoas);
+
+  var v=values(), o=calc(v);
+  var bad=o.cpaMax<=0;
+  $("alert").innerHTML=v.aov<=0?'<div class="alert">Escribe el precio medio del pedido para empezar.</div>':
+    bad?'<div class="alert">Con estos costes pierdes dinero en cada pedido antes de pagar publicidad. Sube el precio o baja costes: ningún ROAS lo arregla.</div>':"";
+  $("o-cpaMax").textContent=bad?"–":money(o.cpaMax);
+  $("o-roasMin").textContent=bad?"–":dec(o.roasMin,2);
+  $("o-cpaObj").textContent=o.cpaObj>0?money(o.cpaObj):"Imposible con ese margen";
+  $("o-roasObj").textContent=o.cpaObj>0?dec(o.roasObj,2):"–";
+  $("o-mPct").textContent=dec(o.mPct,1)+" %";
+
+  var refund=o.Pd*o.del*v.ret/100, gross=o.Pd*o.del;
+  var parts=[["Reembolsos a clientes ("+dec(v.ret,1)+" % devuelto)",refund,"#F2644A"],["Impuestos (IVA)",o.vat,"#E0DFDE"],["Producto",o.cProd,"#14213D"],["Envío y embalaje",o.cShip,"#2394CD"],
+             ["Comisiones",o.cFees,"#FC9C08"],["Gestión de devoluciones y rehusados",o.cRet,"#D6341A"],["Te queda para anuncios y beneficio",Math.max(0,o.m),"#3572D9"]];
+  var tot=parts.reduce(function(a,p){return a+p[1];},0)||1;
+  $("o-bar").innerHTML=parts.map(function(p){return '<i style="width:'+(p[1]/tot*100)+'%;background:'+p[2]+'"></i>';}).join("");
+  $("o-leg").innerHTML=parts.map(function(p,i){
+    var val=i===6?o.m:p[1];
+    return '<li><i style="background:'+p[2]+'"></i>'+p[0]+'<b>'+money(val)+'</b></li>';}).join("");
+  $("o-barSub").textContent=v.cod
+    ?"De cada pedido que entra cobras de media "+money(gross)+", porque solo se entregan "+dec(o.del*100,0)+" de cada 100. Así se reparte."
+    :"De cada pedido cobras "+money(gross)+". Así se reparte.";
+  var perRet=v.ship+v.pack+v.feePct/100*o.Pd+v.feeFix+v.retCost+v.cogs*(1-v.retRecov/100);
+  $("o-retNote").textContent=v.ret>0?"Cada pedido devuelto: reembolsas "+money(o.Pd)+" y además pierdes "+money(perRet)+" (envío, embalaje, comisión de cobro, gestión y producto que no recuperas).":"";
+
+  var inv=Math.max(0,num(state.inv));
+  var roas=byRoas?Math.max(0,num(state.roas)):(num(state.cpa)>0?o.Pd/num(state.cpa):0);
+  var s=simulate(v,o,inv,roas);
+  var loss=s.profit<0;
+  $("o-kpis").innerHTML=
+    '<div class="kpi main'+(loss?" loss":"")+'"><span>'+(loss?"Pérdida neta":"Beneficio neto")+'</span><b>'+money(s.profit,0)+'</b></div>'+
+    kpi("Margen neto",dec(s.margin,1)+" %")+
+    kpi("Por cada 1 "+sym+" en anuncios",(loss?"pierdes ":"ganas ")+money(Math.abs(s.perUnit),2))+
+    kpi(byRoas?"CPA resultante":"ROAS resultante",byRoas?money(s.cpa):dec(s.roas,2))+
+    kpi("Pedidos generados",dec(s.orders,0))+
+    kpi("Pedidos cobrados",dec(s.kept,0))+
+    kpi("Facturación en Meta",money(s.reported,0))+
+    kpi("Ingresos reales sin IVA",money(s.net,0))+
+    kpi("Producto, envíos y comisiones",money(s.costs,0))+
+    kpi("Costes fijos",money(v.fixed,0))+
+    kpi("ROAS para cubrir también los fijos",dec(s.roasFixed,2));
+  var vd;
+  if(bad)vd="Antes de invertir, arregla el margen del producto.";
+  else if(roas<o.roasMin)vd="Estás por debajo de tu ROAS mínimo ("+dec(o.roasMin,2)+"): cada venta te cuesta dinero.";
+  else if(loss)vd="Cubres el producto y los anuncios, pero no los costes fijos. Necesitas ROAS "+dec(s.roasFixed,2)+" o más volumen.";
+  else if(o.cpaObj>0&&roas<o.roasObj)vd="Ganas dinero, pero aún no llegas a tu margen objetivo (ROAS "+dec(o.roasObj,2)+").";
+  else vd="Estás por encima de tu objetivo. Aquí es donde tiene sentido escalar.";
+  $("o-verdict").textContent=vd;
+
+  var list=[1.5,2,2.5,3,3.5,4,5,6].filter(function(x){return Math.abs(x-roas)>0.01;});
+  if(roas>0)list.push(roas);
+  list.sort(function(a,b){return a-b;});
+  var rows=list.map(function(x){return simulate(v,o,inv,x);});
+  var mx=Math.max.apply(null,rows.map(function(x){return Math.abs(x.profit);}))||1;
+  $("o-table").innerHTML=rows.map(function(x){
+    var me=Math.abs(x.roas-roas)<1e-9, n=x.profit<0;
+    return '<tr'+(me?' class="me"':'')+'><td class="n">'+dec(x.roas,2)+(me?" · tú":"")+'</td><td>'+money(x.cpa)+'</td><td>'+dec(x.orders,0)+
+      '</td><td class="n '+(n?"neg":"pos")+'">'+money(x.profit,0)+'</td><td><div class="pb" style="width:'+(Math.abs(x.profit)/mx*100)+'%;background:'+(n?"#D6341A":"#3572D9")+'"></div></td></tr>';
+  }).join("");
+}
+function kpi(l,val){return '<div class="kpi"><span>'+l+'</span><b>'+val+'</b></div>';}
+
+build();load();paint();render();
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.dataset.k)state[t.dataset.k]=t.value;
+  else if(t.dataset.c)state[t.dataset.c]=t.checked;
+  else if(t.id==="cur")state.cur=t.value;
+  else return;
+  save();render();
+});
+$("cur").addEventListener("change",function(){state.cur=this.value;save();render();});
+$("m-roas").addEventListener("click",function(){state.mode="roas";save();render();});
+$("m-cpa").addEventListener("click",function(){state.mode="cpa";save();render();});
+$("reset").addEventListener("click",function(){
+  state={};for(var k in defaults)state[k]=defaults[k];
+  save();paint();render();
+});
+</script>
+</body>
+</html>
